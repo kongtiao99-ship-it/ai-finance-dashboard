@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 金融投资情报看板</title>
+<style>
+:root {
+  --bg-primary: #0b0d12;
+  --bg-secondary: #12151e;
+  --bg-card: #181c28;
+  --bg-hover: #1e2335;
+  --border-color: #252a3e;
+  --text-primary: #e2e6f0;
+  --text-secondary: #9198b0;
+  --text-muted: #555c78;
+  --accent: #10b981;
+  --accent-dim: #065f46;
+  --accent-glow: rgba(16,185,129,.12);
+  --accent-strong: #34d399;
+  --green: #10b981;
+  --red: #ef4444;
+  --gold: #f59e0b;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --pink: #ec4899;
+  --cyan: #06b6d4;
+  --font-stack: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: .3s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--font-stack);
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  min-height:100vh;
+  line-height:1.6;
+}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(135deg,var(--bg-secondary) 0%,#0d101a 100%);
+  border-bottom:1px solid var(--border-color);
+  padding:24px 24px 14px;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.header-inner{max-width:1200px;margin:0 auto}
+.header-top{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;margin-bottom:8px;
+}
+.header-title{
+  font-size:21px;font-weight:700;
+  background:linear-gradient(90deg,var(--accent),var(--accent-strong));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+.header-title small{
+  -webkit-text-fill-color:var(--text-muted);
+  font-weight:400;font-size:13px;margin-left:10px;
+}
+.header-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent-dim);color:var(--accent-strong);
+  padding:3px 14px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1px solid var(--accent);
+}
+.header-badge::before{
+  content:'';display:inline-block;width:7px;height:7px;
+  background:var(--accent);border-radius:50%;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.header-sub{
+  font-size:13px;color:var(--text-muted);
+  display:flex;flex-wrap:wrap;gap:12px 28px;margin-bottom:10px;
+}
+.header-sub .label{color:var(--text-muted)}
+.header-sub .value{color:var(--text-secondary);font-weight:500}
+
+/* ── KPI ROW ── */
+.kpi-row{display:flex;flex-wrap:wrap;gap:8px}
+.kpi-item{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);
+  padding:8px 16px;
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all var(--transition);
+  text-decoration:none;color:inherit;
+}
+.kpi-item:hover{
+  border-color:var(--accent);
+  background:var(--bg-hover);
+  box-shadow:0 0 16px var(--accent-glow);
+  transform:translateY(-2px);
+}
+.kpi-item .num{font-size:18px;font-weight:700;color:var(--accent-strong)}
+.kpi-item .num-total{font-size:24px;color:var(--text-primary)}
+.kpi-item .kpi-label{color:var(--text-muted);font-size:11px}
+.kpi-item.kpi-total{cursor:default}
+.kpi-item.kpi-total:hover{transform:none;box-shadow:none;border-color:var(--border-color);background:var(--bg-card)}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin-top:8px;padding-top:6px;
+  border-top:1px solid var(--border-color);
+}
+.toolbar-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--bg-card);border:1px solid var(--border-color);
+  color:var(--text-secondary);padding:4px 12px;
+  border-radius:var(--radius-sm);font-size:11px;
+  cursor:pointer;transition:all var(--transition);
+  font-family:var(--font-stack);
+}
+.toolbar-btn:hover{
+  border-color:var(--accent);color:var(--accent-strong);
+  background:var(--bg-hover);
+}
+.toolbar-btn.active{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-glow)}
+.toolbar-status{font-size:11px;color:var(--text-muted);margin-left:auto}
+.toolbar-status .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+.toolbar-status .dot.live{background:var(--accent);animation:pulse-dot 2s ease-in-out infinite}
+.toolbar-status .dot.stale{background:var(--gold)}
+
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:20px 24px}
+
+/* ── Chart ── */
+.chart-container{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:18px 22px;
+  margin-bottom:24px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:20px;
+}
+.chart-title{font-size:13px;color:var(--text-muted);font-weight:600;min-width:76px}
+.chart-bars{display:flex;flex:1;gap:4px;align-items:flex-end;height:70px;min-width:180px}
+.chart-bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end;cursor:pointer;transition:opacity var(--transition);text-decoration:none}
+.chart-bar-group:hover{opacity:.7}
+.chart-bar{width:100%;max-width:44px;border-radius:3px 3px 0 0;transition:height .6s cubic-bezier(.34,1.56,.64,1);min-height:4px;position:relative}
+.chart-bar-count{font-size:10px;font-weight:700;color:var(--text-secondary);position:absolute;top:-16px;left:50%;transform:translateX(-50%)}
+.chart-bar-label{font-size:10px;color:var(--text-muted);white-space:nowrap;text-align:center}
+.chart-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-left:auto}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary);cursor:pointer;transition:color var(--transition);text-decoration:none!important}
+.legend-item:hover{color:var(--accent-strong)!important}
+.legend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+
+/* ── CATEGORY GRID ── */
+.cat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:14px;
+  margin-bottom:20px;
+}
+.cat-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:18px;
+  cursor:pointer;
+  transition:all var(--transition);
+  opacity:0;transform:translateY(10px);
+  animation:fadeInUp .4s ease forwards;
+  text-decoration:none;color:inherit;
+}
+.cat-card:hover{
+  border-color:var(--accent-dim);
+  background:var(--bg-hover);
+  box-shadow:0 4px 24px var(--accent-glow);
+  transform:translateY(-3px);
+}
+@keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+.cat-card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cat-card-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.cat-card-title{font-size:15px;font-weight:600;color:var(--text-primary);flex:1}
+.cat-card-count{font-size:22px;font-weight:700;color:var(--accent-strong);line-height:1}
+.cat-card-count small{font-size:12px;color:var(--text-muted);font-weight:400}
+.cat-card-preview{margin-top:6px}
+.cat-card-item{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:12px;color:var(--text-secondary);
+  padding:4px 0;border-bottom:1px solid var(--border-color);line-height:1.4;
+}
+.cat-card-item:last-child{border-bottom:none}
+.cat-card-item-num{color:var(--text-muted);font-weight:600;flex-shrink:0;font-size:10px}
+.cat-card-arrow{
+  text-align:right;margin-top:10px;font-size:12px;color:var(--accent);
+  display:flex;align-items:center;justify-content:flex-end;gap:4px;
+}
+.cat-card-arrow::after{content:'→';transition:transform var(--transition)}
+.cat-card:hover .cat-card-arrow::after{transform:translateX(3px)}
+
+/* ── DETAIL PAGE ── */
+.detail-header{
+  background:linear-gradient(135deg,var(--bg-secondary) 0%,#0d101a 100%);
+  border-bottom:1px solid var(--border-color);
+  padding:16px 24px;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.detail-header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--bg-card);border:1px solid var(--border-color);
+  color:var(--text-secondary);
+  padding:7px 16px;border-radius:var(--radius-sm);
+  font-size:12px;font-weight:600;
+  cursor:pointer;transition:all var(--transition);
+  text-decoration:none;white-space:nowrap;
+}
+.back-btn::before{content:'←';font-size:14px}
+.back-btn:hover{border-color:var(--accent);color:var(--accent-strong);background:var(--bg-hover)}
+.detail-title-area{flex:1}
+.detail-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+.detail-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.detail-info{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* ── ITEM CARD ── */
+.item-card{
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:14px 18px;
+  margin-bottom:8px;
+  transition:all .25s ease;
+  opacity:0;transform:translateY(10px);
+  animation:fadeInUp .4s ease forwards;
+}
+.item-card:hover{
+  border-color:var(--accent-dim);
+  background:var(--bg-hover);
+  box-shadow:0 0 20px var(--accent-glow);
+}
+.item-number{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;
+  background:var(--bg-primary);
+  border:1px solid var(--border-color);
+  border-radius:5px;
+  font-size:10px;font-weight:700;color:var(--text-muted);
+  margin-right:8px;flex-shrink:0;
+}
+.item-title-row{display:flex;align-items:flex-start;gap:4px;margin-bottom:4px}
+.item-title{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.5}
+.item-title a{color:var(--text-primary);text-decoration:none;transition:color .2s}
+.item-title a:hover{color:var(--accent-strong)}
+.item-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:11px;margin-bottom:6px}
+.item-source{color:var(--text-muted)}
+.item-source::before{content:'📰 '}
+.item-time{color:var(--text-muted)}
+.item-time::before{content:'🕐 '}
+.item-summary{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.item-tag{display:inline-block;font-size:9px;font-weight:600;padding:1px 7px;border-radius:3px;margin-right:6px}
+.tag-bull{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.tag-neutral{background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.3)}
+.tag-bear{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.highlight{color:var(--accent-strong);font-weight:600;background:var(--accent-glow);padding:0 3px;border-radius:2px}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:60px;color:var(--text-muted)}
+.spinner{display:inline-block;width:28px;height:28px;border:2px solid var(--border-color);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;margin-top:12px}
+
+/* ── HISTORY MODAL ── */
+.history-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+.history-overlay.show{display:flex}
+.history-panel{
+  background:var(--bg-secondary);border:1px solid var(--border-color);
+  border-radius:var(--radius);padding:24px;width:90%;max-width:500px;
+  max-height:80vh;overflow-y:auto;
+}
+.history-panel h3{font-size:16px;margin-bottom:16px;color:var(--text-primary)}
+.history-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);margin-bottom:8px;
+  cursor:pointer;transition:all var(--transition);
+  background:var(--bg-card);
+}
+.history-item:hover{background:var(--bg-hover);border-color:var(--accent-dim)}
+.history-item.active{border-color:var(--accent);background:var(--accent-glow)}
+.history-date{font-weight:600;color:var(--text-primary)}
+.history-count{font-size:12px;color:var(--text-muted)}
+.history-close-btn{
+  display:block;width:100%;margin-top:12px;
+  padding:8px;border:1px solid var(--border-color);
+  background:var(--bg-card);color:var(--text-secondary);
+  border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font-stack);font-size:12px;
+}
+.history-close-btn:hover{color:var(--accent-strong);border-color:var(--accent)}
+
+/* ── FOOTER ── */
+.footer{
+  text-align:center;padding:20px;
+  color:var(--text-muted);font-size:11px;
+  border-top:1px solid var(--border-color);
+  margin-top:16px;
+}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+/* ── VIEW TOGGLE ── */
+#homeView,#detailView{display:none}
+#homeView.active,#detailView.active{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .header{padding:16px 12px 10px}
+  .header-title{font-size:17px}
+  .kpi-row{gap:6px}
+  .kpi-item{padding:6px 10px;font-size:11px}
+  .kpi-item .num-total{font-size:20px}.kpi-item .num{font-size:15px}
+  .main{padding:12px}
+  .cat-grid{grid-template-columns:1fr;gap:10px}
+  .chart-container{padding:12px;flex-direction:column;align-items:stretch}
+  .chart-bars{min-width:unset;height:55px}
+  .item-card{padding:10px 12px}.item-title{font-size:13px}
+  .detail-header{padding:12px}
+  .toolbar{flex-wrap:wrap}
+}
+@media(max-width:480px){
+  .header-sub{flex-direction:column;gap:3px}
+  .item-meta{flex-direction:column;align-items:flex-start;gap:1px}
+  .detail-header-inner{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HOME VIEW ═══════ -->
+<div id="homeView" class="active">
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-title">
+        AI × 金融投资情报看板
+        <small>· 协议驱动 · 数据实时</small>
+      </div>
+      <div class="header-badge" id="statusBadge">加载中...</div>
+    </div>
+    <div class="header-sub">
+      <div><span class="label">时间窗：</span><span class="value" id="timeWindow">—</span></div>
+      <div><span class="label">来源：</span><span class="value">AI HOT API + 公开资讯</span></div>
+      <div><span class="label">更新于：</span><span class="value" id="generatedAt">—</span></div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-item kpi-total"><span class="num num-total" id="totalCount">0</span><span class="kpi-label">情报总数</span></div>
+      <a class="kpi-item" href="#c1" id="kpiM1"><span class="num">0</span><span class="kpi-label">财报与估值</span></a>
+      <a class="kpi-item" href="#c2" id="kpiM2"><span class="num">0</span><span class="kpi-label">融资并购</span></a>
+      <a class="kpi-item" href="#c3" id="kpiM3"><span class="num">0</span><span class="kpi-label">市场竞争</span></a>
+      <a class="kpi-item" href="#c4" id="kpiM4"><span class="num">0</span><span class="kpi-label">产业链 · 宏观</span></a>
+      <a class="kpi-item" href="#c5" id="kpiM5"><span class="num">0</span><span class="kpi-label">投资策略</span></a>
+      <a class="kpi-item" href="#c6" id="kpiM6"><span class="num">0</span><span class="kpi-label">AI 行业应用</span></a>
+    </div>
+    <div class="toolbar">
+      <button class="toolbar-btn" onclick="refreshData()" title="重新拉取最新数据">🔄 刷新数据</button>
+      <button class="toolbar-btn" onclick="showHistory()" title="查看历史数据快照">📅 历史快照</button>
+      <span class="toolbar-status"><span class="dot live" id="statusDot"></span><span id="statusText">就绪</span></span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="chart-container">
+    <div class="chart-title">分类分布</div>
+    <div class="chart-bars" id="chartBars"></div>
+    <div class="chart-legend" id="chartLegend"></div>
+  </div>
+
+  <div class="cat-grid" id="catGrid">
+    <div class="loading"><div class="spinner"></div><div class="loading-text">正在加载数据...</div></div>
+  </div>
+
+  <div class="footer">
+    数据来源：<a href="https://aihot.virxact.com" target="_blank" rel="noopener noreferrer">AI HOT</a> · 雪球 · 新浪财经 · TechCrunch · WSJ ·
+    最后更新：<span id="lastUpdated">—</span> ·
+    <a href="#" onclick="refreshData();return false">点击刷新</a>获取最新数据
+  </div>
+</div>
+
+</div><!-- /#homeView -->
+
+<!-- ═══════ CATEGORY DETAIL VIEW ═══════ -->
+<div id="detailView">
+  <div class="detail-header">
+    <div class="detail-header-inner">
+      <a class="back-btn" href="#home">返回首页</a>
+      <div class="detail-title-area">
+        <div class="detail-title">
+          <span class="detail-dot" id="detailDot"></span>
+          <span id="detailTitle">—</span>
+        </div>
+        <div class="detail-info" id="detailInfo">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="main" id="detailContent">
+    <div class="loading"><div class="spinner"></div><div class="loading-text">加载中...</div></div>
+  </div>
+</div><!-- /#detailView -->
+
+<!-- ═══════ HISTORY MODAL ═══════ -->
+<div class="history-overlay" id="historyOverlay" onclick="if(event.target===this)hideHistory()">
+  <div class="history-panel">
+    <h3>📅 历史数据快照</h3>
+    <div id="historyList"><div class="loading-text">加载历史...</div></div>
+    <button class="history-close-btn" onclick="hideHistory()">关闭</button>
+  </div>
+</div>
+
+<!-- ═══════ DATA FALLBACK ═══════ -->
+<script>
+// ─── 嵌入式备用数据（当 fetch 无法从服务器加载 data/current.json 时使用）───
+var EMBEDDED_FALLBACK = {"generatedAt":"2026-06-18T09:30:00Z","timeWindow":{"start":"2026-06-11T00:00:00Z","end":"2026-06-18T09:30:00Z"},"totalCount":35,"categories":[{"key":"c1","label":"公司财报与估值","color":"#ef4444"},{"key":"c2","label":"融资、并购与IPO","color":"#f59e0b"},{"key":"c3","label":"市场竞争格局","color":"#3b82f6"},{"key":"c4","label":"产业链与宏观影响","color":"#8b5cf6"},{"key":"c5","label":"投资策略与机构观点","color":"#10b981"},{"key":"c6","label":"AI技术在金融行业的应用","color":"#06b6d4"}],"catCounts":{"c1":5,"c2":7,"c3":4,"c4":3,"c5":6,"c6":10},"items":[{"title":"泄露文件显示 OpenAI 年营收 130 亿但亏损远超收入","url":"https://arstechnica.com/ai/2026/06/leaked-financial-docs-show-openai-is-losing-billions-of-dollars-a-year","source":"Hacker News 热门","publishedAt":"2026-06-17T23:09:09Z","summary":"OpenAI 2025 年营收 130.7 亿美元，但运营亏损 209.2 亿。ChatGPT 周活超 9 亿，付费约 5000 万。已关闭 Sora 视频模型并削减非核心业务。","category":"c1","tag":"利空","tagClass":"tag-bear"},{"title":"OpenAI 一季度现金消耗达 37 亿美元","url":"https://www.ithome.com/0/965/335.htm","source":"IT之家","publishedAt":"2026-06-17T04:55:33Z","summary":"数据来自向股东披露的文件。OpenAI 正筹备上市，已在美国保密递交 IPO 申请，最早或于 9 月完成，估值最高可达 1 万亿美元。","category":"c1","tag":"利空","tagClass":"tag-bear"},{"title":"Anthropic 5 月企业 AI 订阅份额首超 OpenAI","url":"https://techcrunch.com/2026/06/16/anthropics-latest-feud-with-the-trump-admin-may-actually-help-it-sales-data-suggests","source":"TechCrunch","publishedAt":"2026-06-16T22:34:17Z","summary":"Anthropic 5 月企业 AI 订阅市场份额达 41%，首次超越 OpenAI（39.5%）。公司刚完成 650 亿美元融资、估值 9650 亿美元。","category":"c1","tag":"利好","tagClass":"tag-bull"},{"title":"OpenAI 的领先优势正在快速缩小","url":"https://garymarcus.substack.com/p/openais-lead-is-dwindling-fast","source":"Gary Marcus","publishedAt":"2026-06-16T21:54:47Z","summary":"评论认为 OpenAI 面临多重危机：缺乏护城河；最大投资者微软持续疏远；亏损速度远超预期，年亏损额以 8 倍增长。","category":"c1","tag":"利空","tagClass":"tag-bear"},{"title":"SemiAnalysis：200 美元 AI 订阅榨出 70 倍用量","url":"https://www.ithome.com/0/963/834.htm","source":"IT之家","publishedAt":"2026-06-13T06:09:26Z","summary":"月费 200 美元的 Claude Max 20x 方案按 API 价换算最高可消耗约 8000 美元 token。该价格体系在重度用户榨满上限后可能难以长期维持。","category":"c1","tag":"中性","tagClass":"tag-neutral"},{"title":"SpaceX 以 600 亿美元股票收购 AI 编程公司 Cursor","url":"https://techcrunch.com/2026/06/16/spacex-to-acquire-cursor-for-60b-in-stock-days-after-blockbuster-ipo","source":"TechCrunch","publishedAt":"2026-06-16T11:21:41Z","summary":"SpaceX 在历史性 IPO 数天后，同意以 600 亿美元股票收购 AI 编程初创公司 Cursor。此前 Cursor 正接近完成 20 亿美元融资，估值 500 亿美元。","category":"c2","tag":"并购","tagClass":"tag-bull"},{"title":"DeepSeek 完成首轮外部融资，估值超 500 亿美元","url":"https://the-decoder.com/deepseek-takes-outside-money-for-the-first-time-at-a-50-billion-valuation","source":"The Decoder","publishedAt":"2026-06-16T09:40:48Z","summary":"募资超 500 亿元（约 74 亿美元），估值超 500 亿美元。腾讯和宁德时代为主要外部投资者。创始人表示优先基础 AI 研究与 AGI 开发，将继续开源。","category":"c2","tag":"融资","tagClass":"tag-bull"},{"title":"Nvidia 加入 AI 债务热潮，发行 200 亿美元债券","url":"https://the-decoder.com/nvidia-joins-ai-debt-boom-with-20-billion-bond-sale","source":"The Decoder","publishedAt":"2026-06-15T15:43:04Z","summary":"Nvidia 计划通过自 2021 年以来的首次债券发行筹集至少 200 亿美元，标志着 Nvidia 加入 AI 领域的债务融资热潮。","category":"c2","tag":"融资","tagClass":"tag-neutral"},{"title":"Salesforce 以 36 亿美元收购 AI 客服平台 Fin","url":"https://techcrunch.com/2026/06/15/salesforce-acquires-ai-customer-service-platform-fin-for-3-6b","source":"TechCrunch","publishedAt":"2026-06-15T14:34:45Z","summary":"Salesforce 宣布以 36 亿美元收购 AI 客服平台 Fin（前身为 Intercom）。计划利用 Fin 的技术和团队增强企业级 Agentforce 平台。","category":"c2","tag":"并购","tagClass":"tag-bull"},{"title":"上交所发布指引：AI 大模型企业可适用科创板第五套上市标准","url":"https://www.ithome.com/0/965/735.htm","source":"IT之家","publishedAt":"2026-06-18T00:49:16Z","summary":"上交所 6 月 17 日发布指引，支持尚未形成稳定收入的优质 AI 大模型企业通过科创板第五套标准上市。","category":"c2","tag":"政策利好","tagClass":"tag-bull"},{"title":"WSJ：OpenAI 考虑大幅降价，准备 ChatGPT 史上最大改版备战 IPO","url":"https://x.com/rohanpaul_ai/status/2065150529068769357","source":"X：Rohan Paul","publishedAt":"2026-06-11T19:13:49Z","summary":"WSJ 报道 OpenAI 正考虑大幅降价应对 Anthropic 竞争。IPO 前准备对 ChatGPT 进行史上最大改版，打造超级应用。","category":"c2","tag":"IPO","tagClass":"tag-neutral"},{"title":"OpenAI 推出合作伙伴网络，投资 1.5 亿美元支持全球合作伙伴","url":"https://openai.com/index/introducing-openai-partner-network","source":"OpenAI 官网","publishedAt":"2026-06-14T17:00:00Z","summary":"设立三级合作伙伴层级，提供 Codex、网络安全、智能体等专业方向认证。目标在 2026 年底前培训认证 30 万名顾问。","category":"c2","tag":"生态","tagClass":"tag-neutral"},{"title":"Noam Shazeer 离开 Google 加入 OpenAI","url":"https://x.com/Yuchenj_UW/status/2067401895178817999","source":"X：Yuchen Jin","publishedAt":"2026-06-18T00:19:56Z","summary":"两年前谷歌花 27 亿美元请回的 AI 传奇 Noam Shazeer 已离开谷歌，加入 OpenAI。对 Gemini 来说是个残酷的人才打击。","category":"c3","tag":"人才流动","tagClass":"tag-neutral"},{"title":"五角大楼将大部分日常 AI 工作流从 Anthropic 转移至 OpenAI","url":"https://x.com/AYi_AInotes/status/2066679835607412846","source":"X：阿易 AI Notes","publishedAt":"2026-06-16T00:30:44Z","summary":"五角大楼宣布已将超 2/3 日常 AI 工作流从 Anthropic 转移，目标 9 月前清零。OpenAI 调整立场获得订单。","category":"c3","tag":"政企订单","tagClass":"tag-bull"},{"title":"Anthropic 上市前夕，CEO 透露惊人内幕","url":"https://x.com/xiaohu/status/2065991805238497732","source":"X：小互","publishedAt":"2026-06-14T02:56:45Z","summary":"CEO 透露 Mythos 有上千漏洞、Claude 已被美军用于战争、解释离开 OpenAI 因信任崩塌、给出文明崩溃概率 10%-25%。","category":"c3","tag":"争议","tagClass":"tag-bear"},{"title":"白宫 AI 监管决定被指偏袒 OpenAI 与亚马逊","url":"https://garymarcus.substack.com/p/what-washington-must-do","source":"Gary Marcus","publishedAt":"2026-06-14T16:15:35Z","summary":"白宫的 AI 监管决定被指偏袒 OpenAI、亚马逊等企业，同时对 Anthropic 施压不足 24 小时。专家指出可能促使其他国家加速发展「主权 AI」。","category":"c3","tag":"监管","tagClass":"tag-neutral"},{"title":"库克：AI 浪潮引发存储芯片价格暴涨，苹果产品涨价已不可避免","url":"https://www.ithome.com/0/965/694.htm","source":"IT之家","publishedAt":"2026-06-17T22:41:15Z","summary":"苹果 CEO 库克确认 AI 热潮导致存储芯片严重短缺和价格暴涨。自 2024 年以来价格已翻四倍，涨势预计延续至 2027 年。","category":"c4","tag":"涨价","tagClass":"tag-bear"},{"title":"AI 裁员浪潮成为火药桶","url":"https://techcrunch.com/2026/06/15/the-ai-layoff-wave-is-becoming-a-powder-keg","source":"TechCrunch","publishedAt":"2026-06-15T07:25:41Z","summary":"今年科技公司已累计裁员约 15 万人，日均 974 人，速度比去年快 44%。AI 连续三个月被列为裁员首要原因。","category":"c4","tag":"宏观","tagClass":"tag-neutral"},{"title":"微软考虑为 Copilot 集成 DeepSeek V4 以降低成本","url":"https://x.com/kimmonismus/status/2066946013026263110","source":"X：Kim","publishedAt":"2026-06-16T18:08:26Z","summary":"微软正考虑为 Copilot Cowork 提供微软托管的 DeepSeek V4 作为更便宜的模型选项，将完全托管于 Azure。","category":"c4","tag":"供应链","tagClass":"tag-neutral"},{"title":"AI 应用黄金时代已至：Nadella 的护城河论点与 Salesforce 收购 Fin","url":"https://www.tomtunguz.com/golden-age-of-applications","source":"Tomer Tunguz 博客","publishedAt":"2026-06-15T00:00:00Z","summary":"三件事标志 AI 应用进入黄金时代：政府关闭 Anthropic Fable 访问、Nadella 主张 AI 护城河、Salesforce 收购 Fin。","category":"c5","tag":"VC观点","tagClass":"tag-bull"},{"title":"全球 AI 投资者心惊胆战：OpenAI 亏损冲击波，A 股投资者如何应对","url":"https://xueqiu.com/4933292370/395427171","source":"雪球","publishedAt":"2026-06-18T10:00:00Z","summary":"分析指出通用大模型赛道投入产出失衡，行业局部泡沫已显现，但多重基本面支撑决定 AI 不会迎来全行业崩盘，分化将是主线。","category":"c5","tag":"投资建议","tagClass":"tag-neutral"},{"title":"AI 阶段换挡，步入业绩验证的震荡期","url":"http://finance.sina.com.cn/wm/2026-06-15/doc-inicprnf7910214.shtml","source":"新浪财经","publishedAt":"2026-06-15T08:00:00Z","summary":"5 月以来全球权益市场震荡加剧。分母端美联储加息预期升温对估值形成压制；AI 板块进入业绩验证期。","category":"c5","tag":"策略","tagClass":"tag-neutral"},{"title":"Best AI Stocks to Buy in June 2026","url":"https://www.analyticsinsight.net/stocks/best-ai-stocks-to-buy-in-june-2026-for-long-term-growth","source":"Analytics Insight","publishedAt":"2026-06-09T00:00:00Z","summary":"机构推荐 2026 年 6 月 AI 龙头股：NVIDIA、Microsoft、Broadcom、AMD、Alphabet——基于强劲 AI 需求和长期扩张潜力。","category":"c5","tag":"选股","tagClass":"tag-bull"},{"title":"A 股市场研判：AI 引领继续向上，聚焦算力与景气延伸","url":"https://www.vzkoo.com/read/1077819510130001390b71f9e1e8.html","source":"未来智库","publishedAt":"2026-06-01T00:00:00Z","summary":"当前市场主要矛盾集中于海外美联储政策动向及 AI 产业叙事。国内经济与政策变化构成支撑，AI 产业链有望引领延续上涨。","category":"c5","tag":"策略","tagClass":"tag-bull"},{"title":"AI 概念板块资金流入明显，东方国信涨停","url":"https://baijiahao.baidu.com/s?id=1868309899571286774","source":"百家号","publishedAt":"2026-06-18T12:00:00Z","summary":"6 月 18 日大数据、人工智能等相关概念板块资金流入明显。东方国信涨停，CS 人工智指数强势上涨 4.61%。","category":"c5","tag":"A股","tagClass":"tag-bull"},{"title":"方正证券研报「穿越」乌龙：AI 写研报将 2024 年内容标为 2026 年","url":"https://baijiahao.baidu.com/s?id=1868062172770480923","source":"中国证券报","publishedAt":"2026-06-15T11:28:00Z","summary":"方正证券研报将 2024 年国常会内容标记为「2026 年最新会议部署」。业内指出这是 AI 幻觉+信息污染+审核缺失三重叠加的结果。","category":"c6","tag":"合规风险","tagClass":"tag-bear"},{"title":"证监会：系统推进 AI 在资本市场的应用研究与落地实践","url":"https://mp.weixin.qq.com/s?__biz=MjM5MTg0NDY1Mw==&mid=2654022901&idx=1","source":"证监会官网","publishedAt":"2026-06-16T10:00:00Z","summary":"证监会科技监管司表示，行业已积极运用大模型等 AI 技术推动业务与监管全面数字化、智能化升级。正研究制定金融 AI 应用监管框架。","category":"c6","tag":"监管政策","tagClass":"tag-neutral"},{"title":"阿里云：金融智能体终于敢「真干活」，自研芯片金融部署超 10 万卡","url":"https://baijiahao.baidu.com/s?id=1868165143429109026","source":"阿里云官方","publishedAt":"2026-06-16T13:00:00Z","summary":"金融智能体已从「外挂」进化到「原生」，覆盖财富管理、信贷风控、投研投顾等核心场景。真武 AI 芯片在金融行业部署超 10 万卡。","category":"c6","tag":"金融科技","tagClass":"tag-bull"},{"title":"中原银行 AI 智能体、中信建投「信谛听」平台上线","url":"https://www.hlxxi.com/?p=196","source":"HLXXI 行业观察","publishedAt":"2026-06-14T10:30:00Z","summary":"金融 AI 智能体出现两个标志性事件：中原银行外呼营销智能体获奖；中信建投核心业务切换至国产大模型。","category":"c6","tag":"落地案例","tagClass":"tag-bull"},{"title":"AI 量化投资工具深度测评：AlphaGBM 领衔","url":"https://blog.csdn.net/2501_94780923/article/details/161677031","source":"CSDN AI 专栏","publishedAt":"2026-06-04T08:00:00Z","summary":"2026 年主流 AI 量化分析工具五维雷达测评。WorldQuant Brain、QuantConnect 等平台降低散户参与门槛。","category":"c6","tag":"量化投资","tagClass":"tag-bull"},{"title":"AI 渗透金融场景：风控、投研、评级逻辑加速重构","url":"https://baijiahao.baidu.com/s?id=1867438795375845297","source":"中诚信国际","publishedAt":"2026-06-08T11:00:00Z","summary":"金融业 AI 应用围绕三大目标：降本、增效、创新。银行、券商、保险的项目已从试点进入规模化部署阶段。","category":"c6","tag":"行业趋势","tagClass":"tag-bull"},{"title":"工行领航 AI+ 行动：30+ 业务场景落地 500+ AI 应用","url":"https://baijiahao.baidu.com/s?id=1862587351059405547","source":"百家号","publishedAt":"2026-04-16T09:00:00Z","summary":"工商银行在 30 余个业务领域落地超 500 个 AI 应用场景。AI 数字员工承担工作量达 5.5 万人年。","category":"c6","tag":"银行","tagClass":"tag-bull"},{"title":"中概 AI 三条变现路径：算力收租最容易被财报验证","url":"https://baijiahao.baidu.com/s?id=1868304927357195714","source":"百家号","publishedAt":"2026-06-18T10:30:00Z","summary":"分析指出中概 AI 最确定的变现路径是算力收租。阿里云 2026 年 Q1 收入同比增长 38%。","category":"c6","tag":"变现路径","tagClass":"tag-neutral"},{"title":"证监会发声：加快制定金融 AI 应用监管规则","url":"https://baijiahao.baidu.com/s?id=1868219057612817614","source":"2026 中国国际金融展现场报道","publishedAt":"2026-06-16T15:00:00Z","summary":"证监会科技监管司表示正加快制定金融 AI 应用监管规则，确保技术创新与风险可控并行。","category":"c6","tag":"监管政策","tagClass":"tag-neutral"},{"title":"AI 成为全球金融机构首要投资方向，合规与安全治理受热议","url":"https://baijiahao.baidu.com/s?id=1868032439393087572","source":"环球网财经","publishedAt":"2026-06-14T09:00:00Z","summary":"报告指出 AI、智能体应用等正成为驱动金融科技产业变革的核心引擎。AI 已成为全球金融机构首要投资方向。","category":"c6","tag":"行业趋势","tagClass":"tag-bull"}]};
+</script>
+
+<script>
+(function(){
+// ═══════════ GLOBAL STATE ═══════════
+var DATA = null;
+var CATS = [];
+var IS_LIVE = false;
+var CAT_MAP = {};
+
+// ═══════════ UTILS ═══════════
+function toBJ(iso){return new Date(new Date(iso).getTime()+8*3600000)}
+function fmtRel(iso){
+  var n=new Date(),nBJ=new Date(n.getTime()+8*3600000),bj=toBJ(iso);
+  var d=nBJ-bj,min=Math.floor(d/60000),hr=Math.floor(d/3600000),day=Math.floor(d/86400000);
+  var rel=min<1?"刚刚":min<60?min+" 分钟前":hr<24?hr+" 小时前":day<2?"昨天":day<7?day+" 天前":Math.floor(day/7)+" 周前";
+  var Y=bj.getUTCFullYear(),M=String(bj.getUTCMonth()+1).padStart(2,"0"),D=String(bj.getUTCDate()).padStart(2,"0");
+  var h=String(bj.getUTCHours()).padStart(2,"0"),m=String(bj.getUTCMinutes()).padStart(2,"0");
+  return rel+" · "+Y+"-"+M+"-"+D+" "+h+":"+m;
+}
+function trunc(s,n){return s&&s.length>n?s.slice(0,n)+"…":s||""}
+
+function getGlobalNum(catKey,idx){
+  if(!DATA||!DATA.items)return idx+1;
+  var n=0;
+  for(var i=0;i<CATS.length;i++){
+    if(CATS[i].key===catKey)return n+idx+1;
+    n+=DATA.items.filter(function(it){return it.category===CATS[i].key}).length;
+  }
+  return idx+1;
+}
+
+function getCatCount(key){
+  if(!DATA||!DATA.items)return 0;
+  return DATA.items.filter(function(it){return it.category===key}).length;
+}
+
+// ═══════════ DATA LOADING ═══════════
+function loadData(callback){
+  // Try to fetch from server (same-origin, works on CloudStudio)
+  fetch("data/current.json?"+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(d){
+      console.log("[看板] 从服务器加载数据成功:",d.totalCount,"条");
+      setData(d, true);
+      if(callback)callback();
+    })
+    .catch(function(e){
+      console.warn("[看板] 服务器加载失败，使用嵌入式备用数据:",e.message);
+      setData(EMBEDDED_FALLBACK, false);
+      if(callback)callback();
+    });
+}
+
+function setData(d, isLive){
+  DATA = d;
+  IS_LIVE = isLive;
+  CATS = d.categories||[
+    {key:"c1",label:"公司财报与估值",color:"#ef4444"},
+    {key:"c2",label:"融资、并购与IPO",color:"#f59e0b"},
+    {key:"c3",label:"市场竞争格局",color:"#3b82f6"},
+    {key:"c4",label:"产业链与宏观影响",color:"#8b5cf6"},
+    {key:"c5",label:"投资策略与机构观点",color:"#10b981"},
+    {key:"c6",label:"AI技术在金融行业的应用",color:"#06b6d4"}
+  ];
+  CAT_MAP = {};CATS.forEach(function(c){CAT_MAP[c.key]=c.label.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,"").slice(0,4)});
+  renderAll();
+}
+
+function refreshData(){
+  var grid=document.getElementById("catGrid");
+  grid.innerHTML='<div class="loading"><div class="spinner"></div><div class="loading-text">正在拉取最新数据...</div></div>';
+  loadData(function(){
+    updateStatus();
+  });
+}
+
+function updateStatus(){
+  var badge=document.getElementById("statusBadge");
+  var dot=document.getElementById("statusDot");
+  var txt=document.getElementById("statusText");
+  if(IS_LIVE){
+    badge.textContent="数据实时";
+    badge.style.borderColor="var(--accent)";
+    badge.style.color="var(--accent-strong)";
+    dot.className="dot live";
+    txt.textContent="实时数据 · "+DATA.items.length+" 条";
+  }else{
+    badge.textContent="离线备用";
+    badge.style.borderColor="var(--gold)";
+    badge.style.color="var(--gold)";
+    dot.className="dot stale";
+    txt.textContent="离线数据 · 部署后自动获取实时数据";
+  }
+}
+
+// ═══════════ RENDER ═══════════
+function renderAll(){
+  if(!DATA)return;
+  updateStatus();
+
+  // Time
+  var tw=DATA.timeWindow||{start:"",end:""};
+  document.getElementById("timeWindow").textContent=(tw.start||"").slice(0,10)+" ~ "+(tw.end||"").slice(0,10);
+  document.getElementById("generatedAt").textContent=(DATA.generatedAt||"").replace("T"," ").slice(0,16);
+  document.getElementById("totalCount").textContent=DATA.totalCount||0;
+
+  // KPIs
+  CATS.forEach(function(cat,i){
+    var el=document.getElementById("kpiM"+(i+1));
+    if(el)el.querySelector(".num").textContent=getCatCount(cat.key);
+  });
+
+  // Chart
+  renderChart();
+
+  // Grid
+  renderGrid();
+
+  // Last updated
+  var nu=new Date();
+  document.getElementById("lastUpdated").textContent=
+    nu.getFullYear()+"-"+String(nu.getMonth()+1).padStart(2,"0")+"-"+String(nu.getDate()).padStart(2,"0")+" "+
+    String(nu.getHours()).padStart(2,"0")+":"+String(nu.getMinutes()).padStart(2,"0");
+}
+
+function renderChart(){
+  var c=document.getElementById("chartBars");
+  var l=document.getElementById("chartLegend");
+  if(!c||!l)return;
+  var max=1;
+  CATS.forEach(function(cat){var n=getCatCount(cat.key);if(n>max)max=n;});
+
+  var h="";
+  CATS.forEach(function(cat){
+    var n=getCatCount(cat.key),p=n/max*100;
+    h+='<a href="#'+cat.key+'" class="chart-bar-group"><div class="chart-bar" style="height:'+p+'%;background:'+cat.color+'"><span class="chart-bar-count">'+n+'</span></div><span class="chart-bar-label">'+CAT_MAP[cat.key]+'</span></a>';
+  });
+  c.innerHTML=h;
+
+  var lh="";
+  CATS.forEach(function(cat){
+    lh+='<a class="legend-item" href="#'+cat.key+'" style="color:inherit"><div class="legend-dot" style="background:'+cat.color+'"></div>'+CAT_MAP[cat.key]+'</a>';
+  });
+  l.innerHTML=lh;
+}
+
+function renderGrid(){
+  var c=document.getElementById("catGrid");
+  if(!c)return;
+  var h="";
+  CATS.forEach(function(cat,i){
+    var items=(DATA.items||[]).filter(function(it){return it.category===cat.key});
+    var cnt=items.length;
+    var delay=i*80;
+    h+='<a class="cat-card" href="#'+cat.key+'" style="animation-delay:'+delay+'ms">';
+    h+='<div class="cat-card-header"><div class="cat-card-dot" style="background:'+cat.color+'"></div><div class="cat-card-title">'+cat.label+'</div><div class="cat-card-count">'+cnt+' <small>条</small></div></div>';
+    if(cnt>0){
+      h+='<div class="cat-card-preview">';
+      items.slice(0,2).forEach(function(it,idx){
+        h+='<div class="cat-card-item"><span class="cat-card-item-num">#'+getGlobalNum(cat.key,idx)+'</span><span>'+trunc(it.title,48)+'</span></div>';
+      });
+      h+='</div>';
+    }else{h+='<div class="cat-card-preview"><div class="cat-card-item"><span style="color:var(--text-muted)">暂无相关情报</span></div></div>';}
+    h+='<div class="cat-card-arrow">查看全部 '+cnt+' 条情报</div></a>';
+  });
+  c.innerHTML=h;
+}
+
+// ═══════════ CATEGORY DETAIL ═══════════
+function renderCategory(catKey){
+  var cat=CATS.find(function(c){return c.key===catKey});
+  if(!cat)return;
+  var items=(DATA.items||[]).filter(function(it){return it.category===catKey});
+  document.getElementById("detailDot").style.background=cat.color;
+  document.getElementById("detailTitle").textContent=cat.label;
+  document.getElementById("detailInfo").textContent="共 "+items.length+" 条情报 · 全局编号贯穿 · "+(IS_LIVE?"实时数据":"离线备用");
+
+  var con=document.getElementById("detailContent");
+  if(items.length===0){
+    con.innerHTML='<div style="text-align:center;padding:60px;color:var(--text-muted)">暂无相关情报</div>';
+  }else{
+    var h="";
+    items.forEach(function(it,idx){
+      var gn=getGlobalNum(catKey,idx);
+      var time=fmtRel(it.publishedAt||"");
+      var sum=trunc(it.summary||it.title||"",160);
+      var tag=it.tag||"";
+      var tagClass=it.tagClass||"tag-neutral";
+      var delay=(idx%20)*40;
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms">'
+        +'<div class="item-title-row"><span class="item-number">'+gn+'</span><div class="item-title"><a href="'+(it.url||"#")+'" target="_blank" rel="noopener noreferrer">'+(it.title||"")+'</a></div></div>'
+        +'<div class="item-meta"><span class="item-source">'+(it.source||"")+'</span><span class="item-time">'+time+'</span></div>'
+        +'<div class="item-summary">'+(tag?'<span class="item-tag '+tagClass+'">'+tag+'</span>':'')+sum+'</div>'
+        +'</div>';
+    });
+    con.innerHTML=h;
+  }
+}
+
+// ═══════════ HISTORY ═══════════
+function showHistory(){
+  var overlay=document.getElementById("historyOverlay");
+  var list=document.getElementById("historyList");
+  overlay.classList.add("show");
+  list.innerHTML='<div class="loading-text">加载历史...</div>';
+
+  fetch("data/history.json?"+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(history){
+      if(!history||!history.length){
+        list.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:20px">暂无历史快照</div>';
+        return;
+      }
+      var h="";
+      history.reverse().forEach(function(entry){
+        h+='<div class="history-item" onclick="loadSnapshot(\''+entry.date+'\')"><span class="history-date">'+entry.date+'</span><span class="history-count">'+entry.totalCount+' 条</span></div>';
+      });
+      list.innerHTML=h;
+    })
+    .catch(function(){
+      list.innerHTML='<div style="color:var(--text-muted);text-align:center;padding:20px">无法加载历史数据</div>';
+    });
+}
+
+function hideHistory(){
+  document.getElementById("historyOverlay").classList.remove("show");
+}
+
+function loadSnapshot(date){
+  fetch("data/"+date+".json?"+Date.now())
+    .then(function(r){return r.json()})
+    .then(function(d){
+      setData(d, true);
+      hideHistory();
+      document.getElementById("statusBadge").textContent="历史快照";
+      document.getElementById("statusBadge").style.borderColor="var(--gold)";
+      document.getElementById("statusBadge").style.color="var(--gold)";
+      document.getElementById("statusDot").className="dot stale";
+      document.getElementById("statusText").textContent="快照: "+date;
+    })
+    .catch(function(){
+      alert("无法加载该日期的快照");
+    });
+}
+
+// ═══════════ ROUTER ═══════════
+function navigate(){
+  var hash=location.hash.replace("#","")||"home";
+  var homeView=document.getElementById("homeView");
+  var detailView=document.getElementById("detailView");
+  if(hash==="home"){
+    homeView.classList.add("active");
+    detailView.classList.remove("active");
+    document.title="AI 金融投资情报看板";
+    window.scrollTo({top:0,behavior:"smooth"});
+    if(DATA)renderAll();
+  }else{
+    var cat=CATS.find(function(c){return c.key===hash});
+    if(cat){
+      homeView.classList.remove("active");
+      detailView.classList.add("active");
+      document.title=cat.label+" — AI 金融投资情报看板";
+      if(DATA)renderCategory(hash);
+      window.scrollTo({top:0,behavior:"smooth"});
+    }else{location.hash="home";}
+  }
+}
+
+// ═══════════ INIT ═══════════
+loadData(function(){
+  navigate();
+});
+window.addEventListener("hashchange",navigate);
+})();
+</script>
+</body>
+</html>
