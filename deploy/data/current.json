@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-06-20T05:18:11Z",
+  "generatedAt": "2026-06-21T06:06:07Z",
   "timeWindow": {
-    "start": "2026-06-13T05:18:01Z",
-    "end": "2026-06-20T05:18:11Z"
+    "start": "2026-06-14T06:05:55Z",
+    "end": "2026-06-21T06:06:07Z"
   },
-  "totalCount": 75,
+  "totalCount": 72,
   "categories": [
     {
       "key": "c1",
@@ -125,6 +125,20 @@
       "tagClass": "tag-neutral",
       "is_manual": true,
       "category": "c6"
+    },
+    {
+      "id": "cmqm0elho009fsliiybg230vu",
+      "title": "微软双向转售GPT与DeepSeek成全球最大AI中间商",
+      "title_en": "还得是微软会闷声发大财啊，它现在已经成为全球最大的 AI 中间商，oh no ，是最大的中转站， 不仅把ChatGPT卖给中国企业，也把DeepSeek 反向卖给西方客户😁 以上来自彭博社的最新报…",
+      "url": "https://x.com/AYi_AInotes/status/2068218661710512231",
+      "source": "X：阿易 AI Notes (@AYi_AInotes)",
+      "publishedAt": "2026-06-20T06:25:29.000Z",
+      "summary": "彭博社报道，微软已成为全球最大AI模型中转站，既将ChatGPT卖给中国企业，也反向将DeepSeek模型卖给西方客户。报道称微软正在测试DeepSeek-R1和DeepSeek-V4，计划向西方客户提供这些中国模型。这一模式构建起跨中美AI模型的双向贸易网络。",
+      "category": "c6",
+      "score": 75,
+      "selected": true,
+      "tag": "AI动态",
+      "tagClass": "tag-neutral"
     },
     {
       "id": "cmqlj0jn600pdsljggy6btum5",
@@ -1007,68 +1021,12 @@
       "selected": true,
       "tag": "AI动态",
       "tagClass": "tag-neutral"
-    },
-    {
-      "id": "cmqd77jxy05cwslttn9jua0ur",
-      "title": "Anthropic 上市前夕",
-      "title_en": "Anthropic 上市前夕 彭博社采访了Anthropic 公司俩兄妹，在这次采访中（Fable 5 还没有被封杀）Dario Amodei极度的渲染了Mythos的威力和AI的威胁 当然这也是…",
-      "url": "https://x.com/xiaohu/status/2065991805238497732",
-      "source": "X：小互 (@xiaohu)",
-      "publishedAt": "2026-06-14T02:56:45.000Z",
-      "summary": "Anthropic CEO Dario Amodei透露内部模型Mythos有上千漏洞，能黑银行、窃取国家机密；预言AI一到五年内砍掉一半入门级白领工作；称Claude已被美军用于对伊朗战争，涉及女校150人死亡拷问；解释离开OpenAI因信任崩塌；回怼黄仁勋末日营销指控；给出文明崩溃概率10%-25%。",
-      "category": "c2",
-      "score": 75,
-      "selected": true,
-      "tag": "AI动态",
-      "tagClass": "tag-neutral"
-    },
-    {
-      "id": "cmqd1t7a003wgslttffgjyn8q",
-      "title": "Meta 开始撤销 20 亿美元收购 Manus 的交易",
-      "title_en": "Meta reportedly moves to unwind $2B Manus deal after Beijing's demand",
-      "url": "https://techcrunch.com/2026/06/13/meta-reportedly-moves-to-unwind-2b-manus-deal-after-beijings-demand",
-      "source": "TechCrunch：AI（RSS）",
-      "publishedAt": "2026-06-14T00:03:49.000Z",
-      "summary": "据 TechCrunch 报道，Meta 已开始撤销对 Manus 的 20 亿美元收购交易，此前北京要求该交易必须反转。目前收购解除程序已启动。",
-      "category": "c2",
-      "score": 71,
-      "selected": true,
-      "tag": "AI动态",
-      "tagClass": "tag-neutral"
-    },
-    {
-      "id": "cmqc5usi000cbslt49vfrpgge",
-      "title": "谷歌Android安全负责人因反对军事AI合作辞职",
-      "title_en": "谷歌抛弃\"不作恶\"承诺：Android 安全主管因军事 AI 合作愤而辞职，控诉公司丧失道德底线",
-      "url": "https://www.ithome.com/0/963/888.htm",
-      "source": "IT之家（RSS）",
-      "publishedAt": "2026-06-13T08:40:39.000Z",
-      "summary": "谷歌Android平台安全负责人René Mayrhofer辞职，他在5月18日内部告别信中指责公司\"丧失道德指针\"，批评谷歌悄悄放弃碳中和目标（因AI模型能耗），并与美国战争部签署允许AI用于\"任何合法目的\"的协议。今年4月下旬谷歌宣布向五角大楼提供AI用于机密工作，2025年2月更新AI原则时移除了不使用AI开发武器或监控工具的承诺。Mayrhofer担忧谷歌AI产品可能被用于针对公民的大规模监控，包括自己和家人。",
-      "category": "c3",
-      "score": 80,
-      "selected": true,
-      "tag": "AI动态",
-      "tagClass": "tag-neutral"
-    },
-    {
-      "id": "cmqbzf9h3004dslffhpe65f73",
-      "title": "SemiAnalysis 洞察 Token 经济：200 美元 AI 订阅榨出 70 倍用量",
-      "title_en": null,
-      "url": "https://www.ithome.com/0/963/834.htm",
-      "source": "IT之家（RSS）",
-      "publishedAt": "2026-06-13T06:09:26.000Z",
-      "summary": "SemiAnalysis 购买了 Anthropic 和 OpenAI 的全部订阅方案，模拟高强度编码任务直至触及每周上限。月费 200 美元的 Claude Max 20x 方案，按 API 价格换算最高可消耗约值 8000 美元的 token；ChatGPT Pro 20x 方案对应最高约值 14000 美元的 token。用户通过订阅可获取 40 至 70 倍的 API 价值，该机构指出这种价格体系在重度用户持续榨满上限后可能难以长期维持。",
-      "category": "c6",
-      "score": 73,
-      "selected": true,
-      "tag": "AI动态",
-      "tagClass": "tag-neutral"
     }
   ],
   "catCounts": {
     "c1": 4,
-    "c2": 7,
-    "c3": 11,
+    "c2": 5,
+    "c3": 10,
     "c4": 10,
     "c5": 0,
     "c6": 43
