@@ -817,7 +817,7 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" data-url="'+(it.url||"")+'" data-num="'+gn+'">'
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms;cursor:pointer" onclick="openArticle(this)" data-idx="'+allItems.indexOf(it)+'">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
         +'<div class="item-title">'+(it.title||"")+'</div>'
@@ -842,14 +842,8 @@ function renderCategory(catKey){
 
 // ═══════════ ARTICLE DETAIL MODAL ═══════════
 function openArticle(el){
-  // Find the item by URL from data attribute
-  var url = el ? el.dataset.url : null;
-  var item = null;
-  if(DATA&&DATA.items&&url){
-    for(var i=0;i<DATA.items.length;i++){
-      if(DATA.items[i].url===url){item = DATA.items[i];break;}
-    }
-  }
+  var idx = el ? parseInt(el.dataset.idx) : -1;
+  var item = (DATA&&DATA.items&&idx>=0&&idx<DATA.items.length) ? DATA.items[idx] : null;
   if(!item) return;
 
   var overlay = document.getElementById("articleOverlay");
