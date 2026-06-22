@@ -817,10 +817,10 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms" data-url="'+(it.url||"")+'">'
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" data-url="'+(it.url||"")+'" data-num="'+gn+'">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
-        +'<div class="item-title"><span class="item-title-link" onclick="openArticle(\''+(it.url||"")+'\',\''+gn+'\')">'+(it.title||"")+'</span></div>'
+        +'<div class="item-title">'+(it.title||"")+'</div>'
         +(isNew?'<span class="item-badge-new">🆕 NEW</span>':'')
         +'</div>'
         +'<div class="item-meta">'
@@ -841,14 +841,13 @@ function renderCategory(catKey){
 }
 
 // ═══════════ ARTICLE DETAIL MODAL ═══════════
-function openArticle(url, num){
-  // Find the item by URL
+function openArticle(el){
+  // Find the item by URL from data attribute
+  var url = el ? el.dataset.url : null;
   var item = null;
-  if(DATA&&DATA.items){
+  if(DATA&&DATA.items&&url){
     for(var i=0;i<DATA.items.length;i++){
-      if(DATA.items[i].url===url||String(i+1)===num){
-        item = DATA.items[i]; break;
-      }
+      if(DATA.items[i].url===url){item = DATA.items[i];break;}
     }
   }
   if(!item) return;
