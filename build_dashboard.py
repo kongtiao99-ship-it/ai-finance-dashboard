@@ -130,6 +130,66 @@ def main():
         if "tagClass" not in item:
             item["tagClass"] = "tag-neutral"
 
+    # Step 3b: 抓取完整文章内容
+    print("\n📄 Step 3b: 抓取文章全文...")
+    import urllib.request, html.parser, re, ssl
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    fetch_ua = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36"
+    
+    class TextExtractor(html.parser.HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.text_parts = []
+            self.skip = False
+        def handle_starttag(self, tag, attrs):
+            if tag in ('script','style','noscript','nav','footer','header','aside','form'):
+                self.skip = True
+        def handle_endtag(self, tag):
+            if tag in ('script','style','noscript','nav','footer','header','aside','form'):
+                self.skip = False
+            if tag in ('p','br','div','li','h1','h2','h3','h4','h5','h6'):
+                self.text_parts.append('\n')
+        def handle_data(self, data):
+            if not self.skip:
+                t = data.strip()
+                if t: self.text_parts.append(t)
+    
+    def extract_text(html_text):
+        ext = TextExtractor()
+        ext.feed(html_text)
+        raw = ' '.join(ext.text_parts)
+        # Clean up whitespace
+        raw = re.sub(r'\n{3,}', '\n\n', raw)
+        raw = re.sub(r' {2,}', ' ', raw)
+        lines = [l.strip() for l in raw.split('\n') if l.strip()]
+        return '\n'.join(lines[:80])  # max 80 lines
+
+    fetched = 0
+    failed = 0
+    for item in all_items:
+        url = item.get("url", "")
+        if not url or url.startswith("#"): continue
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": fetch_ua, "Accept-Language": "zh-CN,zh;q=0.9"})
+            with urllib.request.urlopen(req, timeout=12, context=ctx) as resp:
+                html_content = resp.read().decode("utf-8", errors="replace")
+            full = extract_text(html_content)
+            if len(full) > 100:  # meaningful content
+                item["fullContent"] = full
+                fetched += 1
+            else:
+                item["fullContent"] = item.get("summary", "")
+                failed += 1
+        except Exception as e:
+            item["fullContent"] = item.get("summary", "")
+            failed += 1
+        if (fetched + failed) % 10 == 0:
+            print(f"  ... {fetched + failed}/{len(all_items)}")
+    
+    print(f"  ✓ 已获取 {fetched} 篇全文, {failed} 篇使用摘要")
+
     # Step 4: 构建输出数据
     print("\n📦 Step 4: 构建输出...")
     output = {
