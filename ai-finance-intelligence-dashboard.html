@@ -234,6 +234,7 @@ body{
   border-radius:var(--radius);
   padding:14px 18px;
   margin-bottom:8px;
+  cursor:pointer;
   transition:all .25s ease;
   opacity:0;transform:translateY(10px);
   animation:fadeInUp .4s ease forwards;
@@ -817,7 +818,7 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms;cursor:pointer" onclick="openArticle(this)" data-idx="'+allItems.indexOf(it)+'">'
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" data-gidx="'+DATA.items.indexOf(it)+'">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
         +'<div class="item-title">'+(it.title||"")+'</div>'
@@ -842,7 +843,7 @@ function renderCategory(catKey){
 
 // ═══════════ ARTICLE DETAIL MODAL ═══════════
 function openArticle(el){
-  var idx = el ? parseInt(el.dataset.idx) : -1;
+  var idx = el ? parseInt(el.dataset.gidx) : -1;
   var item = (DATA&&DATA.items&&idx>=0&&idx<DATA.items.length) ? DATA.items[idx] : null;
   if(!item) return;
 
