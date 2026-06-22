@@ -783,7 +783,7 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      var jsonData = JSON.stringify({title:it.title,url:it.url,source:it.source,publishedAt:it.publishedAt,summary:it.summary,category:it.category,tag:it.tag,tagClass:it.tagClass}).replace(/"/g,'&quot;');
+      var jsonData = JSON.stringify({title:it.title,url:it.url,source:it.source,publishedAt:it.publishedAt,summary:it.summary,fullContent:it.fullContent,category:it.category,tag:it.tag,tagClass:it.tagClass}).replace(/"/g,'&quot;');
       h+='<div class="item-card" style="animation-delay:'+delay+'ms" data-item=\''+jsonData+'\' role="button" tabindex="0">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
@@ -855,10 +855,7 @@ function renderArticle(item){
     +'  <span><span class="alabel">分类：</span><span class="avalue">'+catLabel+'</span></span>'
     +(tag?'  <span><span class="alabel">标签：</span><span class="item-tag '+tagClass+'">'+tag+'</span></span>':'')
     +'</div>'
-    +'<div style="font-size:14px;color:var(--text-secondary);line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-bottom:20px">'+(item.summary||item.title||"")+'</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:14px;border-top:1px solid var(--border-color)">'
-    +'  <a href="'+(item.url||"#")+'" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border:1px solid var(--accent-dim);border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;background:var(--accent-glow);color:var(--accent-strong)">🔗 阅读原文 ↗</a>'
-    +'</div>';
+    +'<div style="font-size:14px;color:var(--text-secondary);line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-bottom:20px">'+(item.fullContent||item.summary||item.title||"暂无内容")+'</div>';
 }
 
 // ═══════════ HISTORY ═══════════
