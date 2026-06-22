@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-06-22T03:12:27Z",
+  "generatedAt": "2026-06-22T06:00:53Z",
   "timeWindow": {
-    "start": "2026-06-15T03:12:26Z",
-    "end": "2026-06-22T03:12:27Z"
+    "start": "2026-06-15T06:00:52Z",
+    "end": "2026-06-22T06:00:53Z"
   },
-  "totalCount": 70,
+  "totalCount": 69,
   "categories": [
     {
       "key": "c1",
@@ -94,21 +94,10 @@
       "category": "c6"
     },
     {
-      "title": "工行领航 AI+ 行动：30+ 业务场景落地 500+ AI 应用",
-      "url": "https://baijiahao.baidu.com/s?id=1862587351059405547",
-      "source": "百家号",
-      "publishedAt": "2026-04-16T09:00:00Z",
-      "summary": "工商银行将「数字工行」升级为「数智工行」，在 30 余个业务领域落地超 500 个 AI 应用场景。AI 数字员工承担工作量达 5.5 万人年。",
-      "tag": "银行",
-      "tagClass": "tag-bull",
-      "is_manual": true,
-      "category": "c6"
-    },
-    {
       "title": "2026 年 6 月 A 股市场研判：AI 引领继续向上",
       "url": "https://www.vzkoo.com/read/1077819510130001390b71f9e1e8.html",
       "source": "未来智库",
-      "publishedAt": "2026-06-01T00:00:00Z",
+      "publishedAt": "2026-06-16T08:00:00Z",
       "summary": "当前市场主要矛盾集中于海外美联储政策动向及 AI 产业叙事。国内经济与政策变化构成支撑，AI 产业链有望引领延续上涨。",
       "tag": "策略",
       "tagClass": "tag-bull",
@@ -1063,6 +1052,6 @@
     "c3": 10,
     "c4": 10,
     "c5": 0,
-    "c6": 42
+    "c6": 41
   }
 }
