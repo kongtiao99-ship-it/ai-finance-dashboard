@@ -818,7 +818,7 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" data-gidx="'+DATA.items.indexOf(it)+'">'
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" ontouchstart="" data-gidx="'+(DATA&&DATA.items?DATA.items.indexOf(it):-1)+'" role="button" tabindex="0">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
         +'<div class="item-title">'+(it.title||"")+'</div>'
