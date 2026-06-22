@@ -254,8 +254,8 @@ body{
 }
 .item-title-row{display:flex;align-items:flex-start;gap:4px;margin-bottom:4px}
 .item-title{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.5}
-.item-title a{color:var(--text-primary);text-decoration:none;transition:color .2s}
-.item-title a:hover{color:var(--accent-strong)}
+.item-title-link{cursor:pointer;color:var(--text-primary);text-decoration:none;transition:color .2s}
+.item-title-link:hover{color:var(--accent-strong);text-decoration:underline}
 .item-meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:11px;margin-bottom:6px}
 .item-source{color:var(--text-muted)}
 .item-source::before{content:'📰 '}
@@ -268,7 +268,93 @@ body{
 .tag-bear{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
 .highlight{color:var(--accent-strong);font-weight:600;background:var(--accent-glow);padding:0 3px;border-radius:2px}
 
-/* ── LOADING ── */
+/* ── NEW BADGE ── */
+.item-badge-new{
+  display:inline-flex;align-items:center;gap:3px;
+  background:linear-gradient(90deg,#059669,#10b981);
+  color:#fff;font-size:10px;font-weight:700;
+  padding:1px 8px;border-radius:4px;
+  margin-left:8px;flex-shrink:0;
+  box-shadow:0 0 8px rgba(16,185,129,.4);
+  animation:newPulse 2s ease-in-out 3;
+}
+@keyframes newPulse{0%,100%{box-shadow:0 0 8px rgba(16,185,129,.4)}50%{box-shadow:0 0 16px rgba(16,185,129,.7)}}
+
+/* ── SUMMARY EXPAND ── */
+.item-summary{font-size:12px;color:var(--text-secondary);line-height:1.7}
+.summary-text{display:inline;word-break:break-word}
+
+/* ── FILTER BAR ── */
+.filter-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  padding:10px 18px;margin-bottom:12px;
+  background:var(--bg-card);border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);
+}
+.filter-btn{
+  padding:4px 12px;border:1px solid var(--border-color);
+  background:transparent;color:var(--text-secondary);
+  border-radius:4px;font-size:11px;cursor:pointer;
+  font-family:var(--font-stack);transition:all var(--transition);
+}
+.filter-btn:hover{border-color:var(--accent-dim);color:var(--accent-strong)}
+.filter-btn.active{border-color:var(--accent);color:var(--accent-strong);background:var(--accent-glow)}
+.filter-count{font-size:11px;color:var(--text-muted);margin-left:auto}
+
+/* ── TIME GROUP ── */
+.time-group{margin-bottom:16px}
+.time-group-label{
+  font-size:11px;font-weight:600;color:var(--text-muted);
+  padding:4px 0 8px;border-bottom:1px solid var(--border-color);
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.time-group-label::after{content:'';flex:1;height:1px;background:var(--border-color)}
+.empty-state{text-align:center;padding:60px 24px;color:var(--text-muted);font-size:14px}
+
+/* ── ARTICLE DETAIL OVERLAY ── */
+.article-overlay{
+  display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.article-overlay.show{display:flex}
+.article-panel{
+  background:var(--bg-secondary);border:1px solid var(--border-color);
+  border-radius:var(--radius);width:95%;max-width:720px;
+  max-height:85vh;overflow-y:auto;
+  animation:panelSlide .3s ease;
+}
+@keyframes panelSlide{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.article-panel-header{
+  position:sticky;top:0;z-index:1;
+  background:var(--bg-secondary);border-bottom:1px solid var(--border-color);
+  padding:16px 22px;display:flex;align-items:center;gap:12px;
+}
+.article-close-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border:1px solid var(--border-color);
+  border-radius:6px;background:var(--bg-card);color:var(--text-secondary);
+  cursor:pointer;transition:all var(--transition);font-size:16px;flex-shrink:0;
+  font-family:var(--font-stack);
+}
+.article-close-btn:hover{border-color:var(--accent);color:var(--accent-strong)}
+.article-panel-body{padding:20px 22px}
+.article-title-lg{font-size:18px;font-weight:700;color:var(--text-primary);line-height:1.5;margin-bottom:12px}
+.article-meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px;color:var(--text-muted);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border-color)}
+.article-meta .alabel{color:var(--text-muted)}
+.article-meta .avalue{color:var(--text-secondary)}
+.article-content{font-size:14px;color:var(--text-secondary);line-height:1.9;white-space:pre-wrap;word-break:break-word}
+.article-footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--border-color);display:flex;flex-wrap:wrap;gap:8px}
+.article-footer a{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 18px;border:1px solid var(--accent-dim);
+  border-radius:var(--radius-sm);font-size:12px;font-weight:600;
+  text-decoration:none;transition:all var(--transition);
+  background:var(--accent-glow);color:var(--accent-strong);
+}
+.article-footer a:hover{background:var(--accent-dim);color:#fff}
+
 .loading{text-align:center;padding:60px;color:var(--text-muted)}
 .spinner{display:inline-block;width:28px;height:28px;border:2px solid var(--border-color);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -412,8 +498,15 @@ body{
       </div>
     </div>
   </div>
-  <div class="main" id="detailContent">
-    <div class="loading"><div class="spinner"></div><div class="loading-text">加载中...</div></div>
+  <div class="main">
+    <div class="filter-bar" id="detailFilter">
+      <button class="filter-btn active" data-sort="time" onclick="setDetailFilter('time')">⏱ 按时间</button>
+      <button class="filter-btn" data-sort="new" onclick="setDetailFilter('new')">🆕 只看新增</button>
+      <span class="filter-count" id="detailFilterCount"></span>
+    </div>
+    <div id="detailContent">
+      <div class="loading"><div class="spinner"></div><div class="loading-text">加载中...</div></div>
+    </div>
   </div>
 </div><!-- /#detailView -->
 
@@ -423,6 +516,19 @@ body{
     <h3>📅 历史数据快照</h3>
     <div id="historyList"><div class="loading-text">加载历史...</div></div>
     <button class="history-close-btn" onclick="hideHistory()">关闭</button>
+  </div>
+</div>
+
+<!-- ═══════ ARTICLE DETAIL OVERLAY ═══════ -->
+<div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
+  <div class="article-panel" id="articlePanel">
+    <div class="article-panel-header">
+      <button class="article-close-btn" onclick="closeArticle()">✕</button>
+      <span style="font-size:13px;font-weight:600;color:var(--text-secondary)" id="articleSectionLabel">内容详情</span>
+    </div>
+    <div class="article-panel-body" id="articleBody">
+      <div style="text-align:center;padding:40px;color:var(--text-muted)">加载中...</div>
+    </div>
   </div>
 </div>
 
@@ -599,35 +705,187 @@ function renderGrid(){
   c.innerHTML=h;
 }
 
+// ═══════════ NEW ITEM DETECTION ═══════════
+var NEW_URLS = {};  // Map of new item URLs -> title
+
+function loadNewItems(prevDay, callback){
+  NEW_URLS = {};
+  if(!prevDay){
+    // Try loading the previous day's snapshot
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate()-1);
+    var yStr = yesterday.getFullYear()+"-"+String(yesterday.getMonth()+1).padStart(2,"0")+"-"+String(yesterday.getDate()).padStart(2,"0");
+    
+    fetch("data/"+yStr+".json?"+Date.now())
+      .then(function(r){return r.json()})
+      .then(function(prev){
+        detectNewFromSnapshot(prev);
+        if(callback)callback();
+      })
+      .catch(function(){if(callback)callback();});
+  }else{
+    detectNewFromSnapshot(prevDay);
+    if(callback)callback();
+  }
+}
+
+function detectNewFromSnapshot(prevData){
+  if(!prevData||!prevData.items)return;
+  var prevUrls={};
+  prevData.items.forEach(function(it){prevUrls[it.url]=true});
+  (DATA.items||[]).forEach(function(it){
+    if(!prevUrls[it.url]) NEW_URLS[it.url]=true;
+  });
+}
+
 // ═══════════ CATEGORY DETAIL ═══════════
+var DETAIL_FILTER = "time";
+
+function setDetailFilter(mode){
+  DETAIL_FILTER = mode;
+  var btns = document.querySelectorAll("#detailFilter .filter-btn");
+  btns.forEach(function(b){b.classList.toggle("active",b.dataset.sort===mode)});
+  renderCategory(CURRENT_CAT);
+}
+
+var CURRENT_CAT = null;
+
 function renderCategory(catKey){
+  CURRENT_CAT = catKey;
   var cat=CATS.find(function(c){return c.key===catKey});
   if(!cat)return;
-  var items=(DATA.items||[]).filter(function(it){return it.category===catKey});
+  var allItems=(DATA.items||[]).filter(function(it){return it.category===catKey});
   document.getElementById("detailDot").style.background=cat.color;
   document.getElementById("detailTitle").textContent=cat.label;
-  document.getElementById("detailInfo").textContent="共 "+items.length+" 条情报 · 全局编号贯穿 · "+(IS_LIVE?"实时数据":"离线备用");
+  document.getElementById("detailInfo").textContent="共 "+allItems.length+" 条情报 · 实时数据";
+
+  // Apply filter
+  var items = DETAIL_FILTER==="new"
+    ? allItems.filter(function(it){return !!NEW_URLS[it.url]})
+    : allItems.slice();
+  
+  // Sort by time (newest first)
+  items.sort(function(a,b){return(b.publishedAt||"").localeCompare(a.publishedAt||"")});
+
+  // Update filter count
+  document.getElementById("detailFilterCount").textContent = 
+    DETAIL_FILTER==="new"
+      ? "新增 "+items.length+" 条 / 共 "+allItems.length+" 条"
+      : "共 "+items.length+" 条";
 
   var con=document.getElementById("detailContent");
   if(items.length===0){
-    con.innerHTML='<div style="text-align:center;padding:60px;color:var(--text-muted)">暂无相关情报</div>';
-  }else{
-    var h="";
-    items.forEach(function(it,idx){
-      var gn=getGlobalNum(catKey,idx);
+    con.innerHTML='<div class="empty-state"><p>'+(DETAIL_FILTER==="new"?"暂无新增情报":"暂无相关情报")+'</p></div>';
+    return;
+  }
+
+  // Group by time periods
+  var groups = {today:[],yesterday:[],week:[],older:[]};
+  var now = new Date(), todayStr = now.toDateString();
+  var yest = new Date(now); yest.setDate(yest.getDate()-1);
+  var yestStr = yest.toDateString();
+  var weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate()-7);
+
+  items.forEach(function(it){
+    var d = new Date(it.publishedAt||0);
+    var ds = d.toDateString();
+    if(ds === todayStr) groups.today.push(it);
+    else if(ds === yestStr) groups.yesterday.push(it);
+    else if(d > weekAgo) groups.week.push(it);
+    else groups.older.push(it);
+  });
+
+  var groupLabels = {
+    today:"今天",
+    yesterday:"昨天", 
+    week:"最近 7 天",
+    older:"更早"
+  };
+
+  var h="";
+  var globalIdx = 0;
+  ["today","yesterday","week","older"].forEach(function(gk){
+    var gItems = groups[gk];
+    if(!gItems.length)return;
+    h+='<div class="time-group"><div class="time-group-label">'+groupLabels[gk]+'</div>';
+    gItems.forEach(function(it){
+      var gn = getGlobalNum(catKey, allItems.indexOf(it));
+      globalIdx++;
       var time=fmtRel(it.publishedAt||"");
-      var sum=trunc(it.summary||it.title||"",160);
-      var tag=it.tag||"";
-      var tagClass=it.tagClass||"tag-neutral";
-      var delay=(idx%20)*40;
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms">'
-        +'<div class="item-title-row"><span class="item-number">'+gn+'</span><div class="item-title"><a href="'+(it.url||"#")+'" target="_blank" rel="noopener noreferrer">'+(it.title||"")+'</a></div></div>'
-        +'<div class="item-meta"><span class="item-source">'+(it.source||"")+'</span><span class="item-time">'+time+'</span></div>'
-        +'<div class="item-summary">'+(tag?'<span class="item-tag '+tagClass+'">'+tag+'</span>':'')+sum+'</div>'
+      var fullSum = it.summary||it.title||"";
+      var tag=it.tag||"", tagClass=it.tagClass||"tag-neutral";
+      var isNew = !!NEW_URLS[it.url];
+      var delay=(globalIdx%20)*40;
+      
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms" onclick="openArticle(this)" data-url="'+(it.url||"")+'" data-num="'+gn+'">'
+        +'<div class="item-title-row">'
+        +'<span class="item-number">'+gn+'</span>'
+        +'<div class="item-title">'+(it.title||"")+'</div>'
+        +(isNew?'<span class="item-badge-new">🆕 NEW</span>':'')
+        +'</div>'
+        +'<div class="item-meta">'
+        +'<span class="item-source">'+(it.source||"")+'</span>'
+        +'<span class="item-time">'+time+'</span>'
+        +'</div>'
+        +'<div class="item-summary">'
+        +(tag?'<span class="item-tag '+tagClass+'">'+tag+'</span>':'')
+        +'<span class="summary-text" id="sum_'+gn+'">'+fullSum+'</span>'
+        +'</div>'
         +'</div>';
     });
-    con.innerHTML=h;
+    h+='</div>';
+  });
+  con.innerHTML=h;
+
+  // Always show full text - no collapsing needed
+}
+
+// ═══════════ ARTICLE DETAIL MODAL ═══════════
+function openArticle(el){
+  // Find the item by URL from data attribute
+  var url = el ? el.dataset.url : null;
+  var item = null;
+  if(DATA&&DATA.items&&url){
+    for(var i=0;i<DATA.items.length;i++){
+      if(DATA.items[i].url===url){item = DATA.items[i];break;}
+    }
   }
+  if(!item) return;
+
+  var overlay = document.getElementById("articleOverlay");
+  var body = document.getElementById("articleBody");
+  var sectionLabel = document.getElementById("articleSectionLabel");
+
+  // Find category label
+  var catLabel = "";
+  if(CATS) CATS.forEach(function(c){if(c.key===item.category) catLabel=c.label});
+
+  sectionLabel.textContent = catLabel ? "📄 "+catLabel : "📄 内容详情";
+
+  var time = fmtRel(item.publishedAt||"");
+  var tag = item.tag||"";
+  var tagClass = item.tagClass||"tag-neutral";
+
+  body.innerHTML = ""
+    +'<div class="article-title-lg">'+(item.title||"")+'</div>'
+    +'<div class="article-meta">'
+    +'<span><span class="alabel">来源：</span><span class="avalue">'+(item.source||"—")+'</span></span>'
+    +'<span><span class="alabel">时间：</span><span class="avalue">'+time+'</span></span>'
+    +(tag?'<span><span class="alabel">标签：</span><span class="item-tag '+tagClass+'">'+tag+'</span></span>':'')
+    +'</div>'
+    +'<div class="article-content">'+(item.summary||item.title||"暂无内容")+'</div>'
+    +'<div class="article-footer">'
+    +'<a href="'+(item.url||"#")+'" target="_blank" rel="noopener noreferrer">🔗 阅读原文 ↗</a>'
+    +'<button class="article-close-btn" onclick="closeArticle()" style="margin-left:auto;width:auto;padding:7px 18px;font-size:12px">关闭</button>'
+    +'</div>';
+
+  overlay.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+
+function closeArticle(){
+  document.getElementById("articleOverlay").classList.remove("show");
+  document.body.style.overflow = "";
 }
 
 // ═══════════ HISTORY ═══════════
@@ -693,7 +951,13 @@ function navigate(){
       homeView.classList.remove("active");
       detailView.classList.add("active");
       document.title=cat.label+" — AI 金融投资情报看板";
-      if(DATA)renderCategory(hash);
+      // Reset filter to time view
+      DETAIL_FILTER = "time";
+      var btns = document.querySelectorAll("#detailFilter .filter-btn");
+      btns.forEach(function(b){b.classList.toggle("active",b.dataset.sort==="time")});
+      if(DATA){
+        loadNewItems(null,function(){renderCategory(hash)});
+      }
       window.scrollTo({top:0,behavior:"smooth"});
     }else{location.hash="home";}
   }
