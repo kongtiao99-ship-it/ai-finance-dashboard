@@ -836,7 +836,7 @@ function showArticle(item){
 }
 
 function goBackFromArticle(){
-  location.hash = PREV_HASH===PREV_HASH ? PREV_HASH : "home";
+  location.hash = PREV_HASH || "home";
 }
 
 function renderArticle(item){
