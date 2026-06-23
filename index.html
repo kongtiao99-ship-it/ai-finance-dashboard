@@ -783,7 +783,8 @@ function renderCategory(catKey){
       var isNew = !!NEW_URLS[it.url];
       var delay=(globalIdx%20)*40;
       
-      h+='<div class="item-card" style="animation-delay:'+delay+'ms" data-gidx="'+DATA.items.indexOf(it)+'" role="button" tabindex="0">'
+      var jsonData = JSON.stringify({title:it.title,url:it.url,source:it.source,publishedAt:it.publishedAt,summary:it.summary,fullContent:it.fullContent,category:it.category,tag:it.tag,tagClass:it.tagClass}).replace(/"/g,'&quot;');
+      h+='<div class="item-card" style="animation-delay:'+delay+'ms" data-item=\''+jsonData+'\' role="button" tabindex="0">'
         +'<div class="item-title-row">'
         +'<span class="item-number">'+gn+'</span>'
         +'<div class="item-title">'+(it.title||"")+'</div>'
@@ -809,12 +810,15 @@ function renderCategory(catKey){
 // ═══════════ ARTICLE DETAIL MODAL ═══════════
 // Event delegation: catch clicks on .item-card inside #detailContent
 document.addEventListener("click", function(e){
+  // Walk up to find the item-card
   var card = e.target;
   while(card && card !== document && !card.classList.contains("item-card")) card=card.parentNode;
-  if(!card || card===document || !card.dataset || !card.dataset.gidx) return;
-  var idx = parseInt(card.dataset.gidx);
-  if(isNaN(idx) || !DATA || !DATA.items || idx<0 || idx>=DATA.items.length) return;
-  showArticle(DATA.items[idx]);
+  if(!card || card===document || !card.dataset || !card.dataset.item) return;
+  try {
+    var item = JSON.parse(card.dataset.item);
+  } catch(er) { return; }
+  if(!item) return;
+  showArticle(item);
 });
 
 // ═══════════ ARTICLE VIEW ═══════════
@@ -851,11 +855,7 @@ function renderArticle(item){
     +'  <span><span class="alabel">分类：</span><span class="avalue">'+catLabel+'</span></span>'
     +(tag?'  <span><span class="alabel">标签：</span><span class="item-tag '+tagClass+'">'+tag+'</span></span>':'')
     +'</div>'
-    +'<div style="font-size:14px;color:var(--text-secondary);line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-bottom:20px">'+(item.fullContent||item.summary||item.title||"暂无内容")+'</div>'
-    +'<div style="text-align:right;font-size:10px;color:var(--text-muted);border-top:1px solid var(--border-color);padding-top:8px;margin-top:8px">'
-    +'<span>来源：'+(item.source||"-")+'</span>'
-    +'<span style="margin-left:12px">全文状态：'+(item.fullContent?'✅ 已加载 ('+item.fullContent.length+'字)':'❌ 仅摘要')+'</span>'
-    +'</div>';
+    +'<div style="font-size:14px;color:var(--text-secondary);line-height:1.9;white-space:pre-wrap;word-break:break-word;margin-bottom:20px">'+(item.fullContent||item.summary||item.title||"暂无内容")+'</div>';
 }
 
 // ═══════════ HISTORY ═══════════
